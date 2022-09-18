@@ -22,6 +22,7 @@ import numpy as np
 from PIL import Image
 import svgwrite
 import gstreamer
+import csv
 
 from pose_engine import PoseEngine
 from pose_engine import KeypointType
@@ -48,7 +49,7 @@ EDGES = (
     (KeypointType.RIGHT_KNEE, KeypointType.RIGHT_ANKLE),
 )
 
-poses_list = ['NOSE', 'LEFT_EYE', 'RIGHT_EYE', 'LEFT_EAR', 'RIGHT_EAR', 'LEFT_SHOULDER', 'RIGHT_SHOULDER' 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP', 'LEFT_KNEE', 'RIGHT_KNEE', 'LEFT_ANKLE', 'RIGHT_ANKLE']
+poses_list = ['NOSE', 'LEFT_EYE', 'RIGHT_EYE', 'LEFT_EAR', 'RIGHT_EAR', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP', 'LEFT_KNEE', 'RIGHT_KNEE', 'LEFT_ANKLE', 'RIGHT_ANKLE']
 
 # global pose_dict 
 pose_dict = {}
@@ -59,6 +60,17 @@ def shadow_text(dwg, x, y, text, font_size=16):
     dwg.add(dwg.text(text, insert=(x, y), fill='white',
                      font_size=font_size, style='font-family:sans-serif'))
 
+def save_dict(p_dict):
+    print("saving dict :D")
+    for k in poses_list:
+        print(len(p_dict[k]))
+    csv_file = 'data/test_csv.csv'
+    try:
+        with open(csv_file, 'w') as f:
+            for key in p_dict.keys():
+                f.write("%s,%s\n"%(key,p_dict[key]))
+    except:
+        print("oopz")
 
 def draw_pose(dwg, pose, src_size, inference_box, color='yellow', threshold=0.2):
     box_x, box_y, box_w, box_h = inference_box
@@ -160,19 +172,18 @@ def main():
 
         shadow_text(svg_canvas, 10, 20, text_line)
 
+        if (n%100==0): save_dict(pose_dict)
+
         for pose in outputs:
             for key in pose.keypoints.keys():
                 point = pose.keypoints[key].point
                 score = pose.keypoints[key].score
                 
                 if (n==0) or (n==1) or (n%100 == 0):
-                    # initialize empty dict
-                    print("saving new dict!")
-                    pose_dict[poses_list[key-1]] = [[point.x, point.y, score]]
+                    pose_dict[poses_list[key]] = [[point.x, point.y, score]]
                     
                 else:
-                    pose_dict[poses_list[key-1]].append([point.x, point.y, score])
-                
+                    pose_dict[poses_list[key]].append([point.x, point.y, score])
                 
             draw_pose(svg_canvas, pose, src_size, inference_box)
         return (svg_canvas.tostring(), False)

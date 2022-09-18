@@ -22,7 +22,9 @@ import numpy as np
 from PIL import Image
 import svgwrite
 import gstreamer
+
 import csv
+import os
 
 from pose_engine import PoseEngine
 from pose_engine import KeypointType
@@ -61,10 +63,11 @@ def shadow_text(dwg, x, y, text, font_size=16):
                      font_size=font_size, style='font-family:sans-serif'))
 
 def save_dict(p_dict):
-    print("saving dict :D")
-    for k in poses_list:
-        print(len(p_dict[k]))
-    csv_file = 'data/test_csv.csv'
+    data_dir = 'pose_data'
+    filenum = len(os.listdir(data_dir))+1
+    
+    csv_file = data_dir + f'/test_csv_{filenum}.csv'
+    print("csv file name: ", csv_file)
     try:
         with open(csv_file, 'w') as f:
             for key in p_dict.keys():
@@ -172,14 +175,16 @@ def main():
 
         shadow_text(svg_canvas, 10, 20, text_line)
 
-        if (n%100==0): save_dict(pose_dict)
+        csv_len = 500
+
+        if (n%csv_len==0): save_dict(pose_dict)
 
         for pose in outputs:
             for key in pose.keypoints.keys():
                 point = pose.keypoints[key].point
                 score = pose.keypoints[key].score
                 
-                if (n==0) or (n==1) or (n%100 == 0):
+                if (n==0) or (n==1) or (n%csv_len == 0):
                     pose_dict[poses_list[key]] = [[point.x, point.y, score]]
                     
                 else:

@@ -65,19 +65,23 @@ def shadow_text(dwg, x, y, text, font_size=16):
     dwg.add(dwg.text(text, insert=(x, y), fill='white',
                      font_size=font_size, style='font-family:sans-serif'))
 
-def save_dict(p_dict):
+def save_dict(p_dict, t_str):
     data_dir = 'pose_data'
     date_str = date.today()
     filenum = len(os.listdir(data_dir))+1
     
-    csv_file = data_dir + f'/{date_str}_test_csv_{filenum}.csv'
-    print("csv file name: ", csv_file)
-    try:
-        with open(csv_file, 'w') as f:
-            for key in p_dict.keys():
-                f.write("%s,%s\n"%(key,p_dict[key]))
-    except:
-        print("oopz")
+    csv_file = data_dir + f'/{date_str}_{t_str}_test_csv_{filenum}.csv'
+    print("saving csv file name: ", csv_file)
+    with open(csv_file, 'w') as f:
+        writer = csv.DictWriter(f, p_dict.keys())
+        writer.writeheader()
+        writer.writerow(p_dict)
+    #try:
+        #with open(csv_file, 'w') as f:
+            #for key in p_dict.keys():
+                #f.write("%s,%s\n"%(key,p_dict[key]))
+    #except:
+        #print("oopz")
 
 def draw_pose(dwg, pose, src_size, inference_box, color='yellow', threshold=0.2):
     box_x, box_y, box_w, box_h = inference_box
@@ -180,25 +184,29 @@ def main():
 
         shadow_text(svg_canvas, 10, 20, text_line)
 
-        csv_len = 1000
+        csv_len = 500
 
-        if (n%csv_len==0): save_dict(pose_dict)
+        now = datetime.now()
+        time_str = now.strftime("%H:%M:%S")
+        
+        if (n%csv_len==0): 
+            save_dict(pose_dict, time_str)
 
         for pose in outputs:
-            now = datetime.now()
-            time_str = now.strftime("%H:%M:%S")
+            
             for key in pose.keypoints.keys():
                 point = pose.keypoints[key].point
                 score = pose.keypoints[key].score
                 
                 if (n==0) or (n==1) or (n%csv_len == 0):
-                    # print("saving dict! at n = ", n)
+                    pose_dict['time'] = [time_str]
                     pose_dict[poses_list[key]] = [[point.x, point.y, score, time_str]]
                     
                 else:
                     # print("n =", n)
                     # print("pose_dict: ", pose_dict)
                     # print("poses_list[key]: ", poses_list[key])
+                    pose_dict['time'].append(time_str)
                     pose_dict[poses_list[key]].append([point.x, point.y, score, time_str])
                 
             # draw_pose(svg_canvas, pose, src_size, inference_box)

@@ -29,6 +29,9 @@ import os
 from pose_engine import PoseEngine
 from pose_engine import KeypointType
 
+from datetime import date
+from datetime import datetime
+
 EDGES = (
     (KeypointType.NOSE, KeypointType.LEFT_EYE),
     (KeypointType.NOSE, KeypointType.RIGHT_EYE),
@@ -64,9 +67,10 @@ def shadow_text(dwg, x, y, text, font_size=16):
 
 def save_dict(p_dict):
     data_dir = 'pose_data'
+    date_str = date.today()
     filenum = len(os.listdir(data_dir))+1
     
-    csv_file = data_dir + f'/test_csv_{filenum}.csv'
+    csv_file = data_dir + f'/{date_str}_test_csv_{filenum}.csv'
     print("csv file name: ", csv_file)
     try:
         with open(csv_file, 'w') as f:
@@ -165,6 +169,7 @@ def main():
         outputs, inference_time = engine.ParseOutput()
         end_time = time.monotonic()
         n += 1
+        # print("n = ", n)
         sum_process_time += 1000 * (end_time - start_time)
         sum_inference_time += inference_time * 1000
 
@@ -175,22 +180,28 @@ def main():
 
         shadow_text(svg_canvas, 10, 20, text_line)
 
-        csv_len = 500
+        csv_len = 1000
 
         if (n%csv_len==0): save_dict(pose_dict)
 
         for pose in outputs:
+            now = datetime.now()
+            time_str = now.strftime("%H:%M:%S")
             for key in pose.keypoints.keys():
                 point = pose.keypoints[key].point
                 score = pose.keypoints[key].score
                 
                 if (n==0) or (n==1) or (n%csv_len == 0):
-                    pose_dict[poses_list[key]] = [[point.x, point.y, score]]
+                    # print("saving dict! at n = ", n)
+                    pose_dict[poses_list[key]] = [[point.x, point.y, score, time_str]]
                     
                 else:
-                    pose_dict[poses_list[key]].append([point.x, point.y, score])
+                    # print("n =", n)
+                    # print("pose_dict: ", pose_dict)
+                    # print("poses_list[key]: ", poses_list[key])
+                    pose_dict[poses_list[key]].append([point.x, point.y, score, time_str])
                 
-            draw_pose(svg_canvas, pose, src_size, inference_box)
+            # draw_pose(svg_canvas, pose, src_size, inference_box)
         return (svg_canvas.tostring(), False)
 
     run(run_inference, render_overlay)

@@ -199,17 +199,17 @@ def main():
                 score = pose.keypoints[key].score
                 
                 if (n==0) or (n==1) or (n%csv_len == 0):
-                    pose_dict['time'] = [time_str]
+                    # pose_dict['time'] = [time_str]
                     pose_dict[poses_list[key]] = [[point.x, point.y, score, time_str]]
                     
                 else:
                     # print("n =", n)
                     # print("pose_dict: ", pose_dict)
                     # print("poses_list[key]: ", poses_list[key])
-                    pose_dict['time'].append(time_str)
+                    # pose_dict['time'].append(time_str)
                     pose_dict[poses_list[key]].append([point.x, point.y, score, time_str])
                 
-            # draw_pose(svg_canvas, pose, src_size, inference_box)
+            draw_pose(svg_canvas, pose, src_size, inference_box)
         return (svg_canvas.tostring(), False)
 
     run(run_inference, render_overlay)

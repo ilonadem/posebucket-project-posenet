@@ -1,13 +1,13 @@
 
-for file in /home/mendel/coral/posebucket-project-posenet/pose_data/*.csv
+for file in /home/mendel/posebucket-project-posenet/pose_data/*.csv
 do
 	echo "sending $file to google cloud server !!"
 	# ../../google-cloud-sdk/bin/gsutil cp $file gs://mediapipe-data/homerun_test1/
 
-	year=${file[*]:56:4}
-	month=${file[*]:61:2}
-	day=${file[*]:64:2}
-	time=${file[*]:67:2}
+	year=${file[*]:50:4}
+	month=${file[*]:55:2}
+	day=${file[*]:58:2}
+	time=${file[*]:61:2}
 
 	# echo "file: $file"
 	# echo "file: ${file[*]}"
@@ -16,7 +16,7 @@ do
 	# echo "day $day"
 	# echo "time $time"
 
-	runname="homerun_test1"
+	runname="ilona_data"
 	direc="gs://mediapipe-data/$runname/$year/$month/$day/$time/"
 
 	/home/mendel/google-cloud-sdk/bin/gsutil cp $file $direc

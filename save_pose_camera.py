@@ -70,18 +70,12 @@ def save_dict(p_dict, t_str):
     date_str = date.today()
     filenum = len(os.listdir(data_dir))+1
     
-    csv_file = data_dir + f'/{date_str}_{t_str}_test_csv_{filenum}.csv'
+    csv_file = data_dir + f'/{date_str}_{t_str}.csv'
     print("saving csv file name: ", csv_file)
     with open(csv_file, 'w') as f:
         writer = csv.DictWriter(f, p_dict.keys())
         writer.writeheader()
         writer.writerow(p_dict)
-    #try:
-        #with open(csv_file, 'w') as f:
-            #for key in p_dict.keys():
-                #f.write("%s,%s\n"%(key,p_dict[key]))
-    #except:
-        #print("oopz")
 
 def draw_pose(dwg, pose, src_size, inference_box, color='yellow', threshold=0.2):
     box_x, box_y, box_w, box_h = inference_box
@@ -188,11 +182,13 @@ def main():
 
         now = datetime.now()
         time_str = now.strftime("%H:%M:%S")
-        
+        det_time_str = now.strftime("%H:%M:%S.%f")
+       
         if (n%csv_len==0): 
             save_dict(pose_dict, time_str)
 
         for pose in outputs:
+            # print(pose)
             
             for key in pose.keypoints.keys():
                 point = pose.keypoints[key].point
@@ -200,14 +196,14 @@ def main():
                 
                 if (n==0) or (n==1) or (n%csv_len == 0):
                     # pose_dict['time'] = [time_str]
-                    pose_dict[poses_list[key]] = [[point.x, point.y, score, time_str]]
+                    pose_dict[poses_list[key]] = [[point.x, point.y, score, det_time_str]]
                     
                 else:
                     # print("n =", n)
                     # print("pose_dict: ", pose_dict)
                     # print("poses_list[key]: ", poses_list[key])
                     # pose_dict['time'].append(time_str)
-                    pose_dict[poses_list[key]].append([point.x, point.y, score, time_str])
+                    pose_dict[poses_list[key]].append([point.x, point.y, score, det_time_str])
                 
             draw_pose(svg_canvas, pose, src_size, inference_box)
         return (svg_canvas.tostring(), False)

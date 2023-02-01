@@ -9,6 +9,7 @@ do
 	day=${file[*]:58:2}
 	time=${file[*]:61:2}
 
+	echo $1
 	# echo "file: $file"
 	# echo "file: ${file[*]}"
 	# echo "year $year"
@@ -16,7 +17,7 @@ do
 	# echo "day $day"
 	# echo "time $time"
 
-	runname="ilona_data"
+	runname="deft_shrimp_data/$1"
 	direc="gs://mediapipe-data/$runname/$year/$month/$day/$time/"
 
 	/home/mendel/google-cloud-sdk/bin/gsutil cp $file $direc

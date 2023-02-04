@@ -17,7 +17,7 @@ do
 	# echo "day $day"
 	# echo "time $time"
 
-	runname="deft_shrimp_data/$1"
+	runname="$1/elusive_tang"
 	direc="gs://mediapipe-data/$runname/$year/$month/$day/$time/"
 
 	/home/mendel/google-cloud-sdk/bin/gsutil cp $file $direc

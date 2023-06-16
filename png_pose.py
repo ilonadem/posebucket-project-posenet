@@ -12,21 +12,48 @@ import os
 #           'Hindu_marriage_ceremony_offering.jpg/'
 #           '640px-Hindu_marriage_ceremony_offering.jpg -O /tmp/couple.jpg')
 # pil_image = Image.open('/tmp/couple.jpg').convert('RGB')
-pil_image = Image.open('video_files/images_00/image_0.png').convert('RGB')
-engine = PoseEngine(
-    'models/mobilenet/posenet_mobilenet_v1_075_481_641_quant_decoder_edgetpu.tflite')
-poses, inference_time = engine.DetectPosesInImage(pil_image)
-print('Inference time: %.f ms' % (inference_time * 1000))
 
-# for pose in poses:
-#     if pose.score < 0.4: continue
-#     print('\nPose Score: ', pose.score)
-#     for label, keypoint in pose.keypoints.items():
-#         print('  %-20s x=%-4d y=%-4d score=%.1f' %
-#               (label.name, keypoint.point[0], keypoint.point[1], keypoint.score))
+def save_dict(p_dict, t_str):
+    data_dir = 'pose_data'
+    # date_str = date.today()
+    # filenum = len(os.listdir(data_dir))+1
+    
+    csv_file = data_dir + f'/{filename}.csv'
+    print("saving csv file name: ", csv_file)
+    with open(csv_file, 'w') as f:
+        writer = csv.DictWriter(f, p_dict.keys())
+        writer.writeheader()
+        writer.writerow(p_dict)
 
-for pose in poses:
-    for key in pose.keypoints.keys():
-        point = pose.keypoints[key].point
-        score = pose.keypoints[key].score
-        print(point, score)
+n = 0
+pose_dict = {}
+filename = 'images_00'
+
+for image_file in os.listdir(f'video_files/{filename}/'):
+    pil_image = Image.open('video_files/images_00/' + image_file).convert('RGB')
+# pil_image = Image.open('video_files/images_00/image_0.png').convert('RGB')
+    engine = PoseEngine(
+        'models/mobilenet/posenet_mobilenet_v1_075_481_641_quant_decoder_edgetpu.tflite')
+    poses, inference_time = engine.DetectPosesInImage(pil_image)
+    print('Inference time: %.f ms' % (inference_time * 1000))
+
+    # for pose in poses:
+    #     if pose.score < 0.4: continue
+    #     print('\nPose Score: ', pose.score)
+    #     for label, keypoint in pose.keypoints.items():
+    #         print('  %-20s x=%-4d y=%-4d score=%.1f' %
+    #               (label.name, keypoint.point[0], keypoint.point[1], keypoint.score))
+
+    for pose in poses:
+        for key in pose.keypoints.keys():
+            point = pose.keypoints[key].point
+            score = pose.keypoints[key].score
+            
+            if n==0:
+                pose_dict[poses_list[key]] = [[point.x, point.y, score, n]]
+            else:
+                pose_dict[poses_list[key]].append([point.x, point.y, score, n])
+
+    n += 1
+
+save_dict(pose_dict, filename)

@@ -5,10 +5,6 @@ do
         var="0${var}"
     fi
     echo "$var"
-
-    gsutil -m cp -r \
-      "gs://mediapipe-data/videos_for_coral/images_00" \
-      .
     
 done
 

@@ -14,7 +14,7 @@ import csv
 #           '640px-Hindu_marriage_ceremony_offering.jpg -O /tmp/couple.jpg')
 # pil_image = Image.open('/tmp/couple.jpg').convert('RGB')
 
-def save_dict(p_dict, t_str):
+def save_dict(p_dict, filename):
     data_dir = 'pose_data'
     # date_str = date.today()
     # filenum = len(os.listdir(data_dir))+1
@@ -59,4 +59,4 @@ for img_folder in os.listdir('video_files'):
 
         n += 1
 
-save_dict(pose_dict, filename)
+    save_dict(pose_dict, image_file[:-4])

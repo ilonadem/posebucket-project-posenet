@@ -28,12 +28,12 @@ def save_dict(p_dict, t_str):
 
 n = 0
 pose_dict = {}
-filename = 'images_00'
+filename = os.listdir(video_files)
 
 poses_list = ['NOSE', 'LEFT_EYE', 'RIGHT_EYE', 'LEFT_EAR', 'RIGHT_EAR', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP', 'LEFT_KNEE', 'RIGHT_KNEE', 'LEFT_ANKLE', 'RIGHT_ANKLE']
 
 for image_file in os.listdir(f'video_files/{filename}/'):
-    pil_image = Image.open('video_files/images_00/' + image_file).convert('RGB')
+    pil_image = Image.open(f'video_files/{filename}/' + image_file).convert('RGB')
 # pil_image = Image.open('video_files/images_00/image_0.png').convert('RGB')
     engine = PoseEngine(
         'models/mobilenet/posenet_mobilenet_v1_075_481_641_quant_decoder_edgetpu.tflite')

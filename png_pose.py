@@ -28,35 +28,35 @@ def save_dict(p_dict, t_str):
 
 n = 0
 pose_dict = {}
-filename = os.listdir('video_files')
 
 poses_list = ['NOSE', 'LEFT_EYE', 'RIGHT_EYE', 'LEFT_EAR', 'RIGHT_EAR', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP', 'LEFT_KNEE', 'RIGHT_KNEE', 'LEFT_ANKLE', 'RIGHT_ANKLE']
 
-for image_file in os.listdir(f'video_files/{filename}/'):
-    pil_image = Image.open(f'video_files/{filename}/' + image_file).convert('RGB')
-# pil_image = Image.open('video_files/images_00/image_0.png').convert('RGB')
-    engine = PoseEngine(
-        'models/mobilenet/posenet_mobilenet_v1_075_481_641_quant_decoder_edgetpu.tflite')
-    poses, inference_time = engine.DetectPosesInImage(pil_image)
-    print('Inference time: %.f ms' % (inference_time * 1000))
+for img_folder in os.listdir('video_files'):
+    for image_file in os.listdir(f'video_files/{img_folder}/'):
+        pil_image = Image.open(f'video_files/{img_folder}/' + image_file).convert('RGB')
+    # pil_image = Image.open('video_files/images_00/image_0.png').convert('RGB')
+        engine = PoseEngine(
+            'models/mobilenet/posenet_mobilenet_v1_075_481_641_quant_decoder_edgetpu.tflite')
+        poses, inference_time = engine.DetectPosesInImage(pil_image)
+        print('Inference time: %.f ms' % (inference_time * 1000))
 
-    # for pose in poses:
-    #     if pose.score < 0.4: continue
-    #     print('\nPose Score: ', pose.score)
-    #     for label, keypoint in pose.keypoints.items():
-    #         print('  %-20s x=%-4d y=%-4d score=%.1f' %
-    #               (label.name, keypoint.point[0], keypoint.point[1], keypoint.score))
+        # for pose in poses:
+        #     if pose.score < 0.4: continue
+        #     print('\nPose Score: ', pose.score)
+        #     for label, keypoint in pose.keypoints.items():
+        #         print('  %-20s x=%-4d y=%-4d score=%.1f' %
+        #               (label.name, keypoint.point[0], keypoint.point[1], keypoint.score))
 
-    for pose in poses:
-        for key in pose.keypoints.keys():
-            point = pose.keypoints[key].point
-            score = pose.keypoints[key].score
-            
-            if n==0:
-                pose_dict[poses_list[key]] = [[point.x, point.y, score, n]]
-            else:
-                pose_dict[poses_list[key]].append([point.x, point.y, score, n])
+        for pose in poses:
+            for key in pose.keypoints.keys():
+                point = pose.keypoints[key].point
+                score = pose.keypoints[key].score
+                
+                if n==0:
+                    pose_dict[poses_list[key]] = [[point.x, point.y, score, n]]
+                else:
+                    pose_dict[poses_list[key]].append([point.x, point.y, score, n])
 
-    n += 1
+        n += 1
 
 save_dict(pose_dict, filename)

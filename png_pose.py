@@ -7,6 +7,7 @@ from PIL import ImageDraw
 
 import numpy as np
 import os
+import csv
 
 # os.system('wget https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/'
 #           'Hindu_marriage_ceremony_offering.jpg/'

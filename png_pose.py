@@ -16,10 +16,11 @@ import csv
 
 def save_dict(p_dict, filename):
     data_dir = 'pose_data'
+    print(filename)
     # date_str = date.today()
     # filenum = len(os.listdir(data_dir))+1
     
-    csv_file = data_dir + f'/{filename}.csv'
+    csv_file = data_dir + f'/images_{filename}.csv'
     print("saving csv file name: ", csv_file)
     with open(csv_file, 'w') as f:
         writer = csv.DictWriter(f, p_dict.keys())
@@ -27,6 +28,7 @@ def save_dict(p_dict, filename):
         writer.writerow(p_dict)
 
 n = 0
+f_num = 0
 pose_dict = {}
 
 poses_list = ['NOSE', 'LEFT_EYE', 'RIGHT_EYE', 'LEFT_EAR', 'RIGHT_EAR', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP', 'LEFT_KNEE', 'RIGHT_KNEE', 'LEFT_ANKLE', 'RIGHT_ANKLE']
@@ -53,10 +55,12 @@ for img_folder in os.listdir('video_files'):
                 score = pose.keypoints[key].score
                 
                 if n==0:
-                    pose_dict[poses_list[key]] = [[point.x, point.y, score, n]]
+                    pose_dict[poses_list[key]] = [[point.x, point.y, score, n+f_num, image_file]]
                 else:
-                    pose_dict[poses_list[key]].append([point.x, point.y, score, n])
+                    pose_dict[poses_list[key]].append([point.x, point.y, score, n+f_num, image_file])
 
         n += 1
+    f_num += 100
 
-    save_dict(pose_dict, image_file[:-4])
+
+    save_dict(pose_dict, img_folder)
